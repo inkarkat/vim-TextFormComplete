@@ -1,6 +1,7 @@
 " TextFormComplete.vim: Convert textual options into completion candidates.
 "
 " DEPENDENCIES:
+"   - ingouserquery.vim autoload script
 "   - SwapIt.vim plugin (optional)
 "
 " Copyright: (C) 2012 Ingo Karkat
@@ -9,6 +10,8 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"	003	21-Aug-2012	ENH: Also offer normal-mode q| mapping that
+"				prints list or used supplied [count].
 "	002	21-Aug-2012	ENH: Define completed alternatives in SwapIt, so
 "				that the choice made can be corrected via
 "				CTRL-A / CTRL-X.
@@ -77,7 +80,7 @@ function! TextFormComplete#TextFormComplete( findstart, base )
     if a:findstart
 	return s:Search('\%#', 'bn')
     else
-	return l:matches
+	return s:Matches(a:base)
     endif
 endfunction
 
@@ -92,22 +95,23 @@ function! s:GetChoice( matches )
     echohl None
     for i in range(1, len(a:matches))
 	let l:explanation = get(a:matches[i - 1], 'menu', '')
-	echo printf('%2d %s%s', i, a:matches[i - 1].word, (empty(l:explanation) ? '' : "\t" . l:explanation))
+	echo printf('%2d %s', i, a:matches[i - 1].word)
+	if ! empty(l:explanation)
+	    echohl Directory
+	    echon "\t" . l:explanation
+	    echohl None
+	endif
     endfor
     echo 'Type number (<Enter> cancels): '
-    let l:choice = nr2char(getchar())
+    let l:choice = ingouserquery#GetNumber(len(a:matches))
     redraw	" Somehow need this to avoid the hit-enter prompt.
-    if l:choice =~# '\d'
-	return str2nr(l:choice)
-    else
-	return -1
-    endif
+    return l:choice
 endfunction
 function! s:ReplaceWithMatch( startCol, endCol, match )
     let l:line = getline('.')
     call setline('.', strpart(l:line, 0, a:startCol) . a:match.word . strpart(l:line, a:endCol + 1))
 endfunction
-function! TextFormComplete#List( count )
+function! TextFormComplete#Choose( count )
     " Try before / at the cursor.
     let l:startCol = s:Search('', 'bc')
     if l:startCol == -1
@@ -132,7 +136,7 @@ function! TextFormComplete#List( count )
     if l:count == -1
 	return
     elseif l:count > len(l:matches)
-	call s:ErrorMsg(printf('Only %d alternatives', len(l:matches))
+	call s:ErrorMsg(printf('Only %d alternatives', len(l:matches)))
 	return
     endif
 
