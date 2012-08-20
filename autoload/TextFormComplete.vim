@@ -12,9 +12,17 @@
 
 let s:unescaped = '\%(\%(^\|[^\\]\)\%(\\\\\)*\\\)\@<!'
 function! s:Unescape( text )
-    return substitute(a:text, s:unescaped.'\\\ze[][|\\]', '', 'g')
+    return substitute(a:text, s:unescaped.'\\\ze[][|(\\]', '', 'g')
 endfunction
-let s:chars = '[][()|\\0-9A-Za-z_-]'
+function! s:FormItemToMatch( formItem )
+    let [l:item, l:explanation] = matchlist(a:formItem, '^\(.\{-}\)\%( '.s:unescaped.'(\([^)]*\))\)\?$')[1:2]
+    let l:match = {'word': s:Unescape(l:item)}
+    if ! empty(l:explanation)
+	let l:match.menu = s:Unescape(l:explanation)
+    endif
+    return l:match
+endfunction
+let s:chars = '[][()|\\0-9A-Za-z_+-]'
 function! TextFormComplete#TextFormComplete( findstart, base )
     if a:findstart
 	" Locate the start of a text form in the format "[foo bar|quux]".
@@ -27,8 +35,8 @@ function! TextFormComplete#TextFormComplete( findstart, base )
 	return l:startCol - 1 " Return byte index, not column.
     else
 	let l:formText = (a:base =~# '^\[.*]$' ? a:base[1:-2] : a:base)
-	let l:formItems = map(split(l:formText, s:unescaped.'|'), "s:Unescape(v:val)")
-	let l:matches = map(l:formItems, '{"word": v:val}')
+	let l:formItems = split(l:formText, s:unescaped.'|')
+	let l:matches = map(l:formItems, 's:FormItemToMatch(v:val)')
 	return l:matches
     endif
 endfunction
