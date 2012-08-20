@@ -1,6 +1,7 @@
 " TextFormComplete.vim: Convert textual options into completion candidates.
 "
 " DEPENDENCIES:
+"   - SwapIt.vim plugin (optional)
 "
 " Copyright: (C) 2012 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
@@ -8,7 +9,33 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"	002	21-Aug-2012	ENH: Define completed alternatives in SwapIt, so
+"				that the choice made can be corrected via
+"				CTRL-A / CTRL-X.
 "	001	20-Aug-2012	file creation
+
+let s:SwapItFormCnt = 0
+function! s:AddToSwapIt( matches )
+    if ! exists('g:swap_lists')
+	" The SwapIt plugin is not installed.
+	return
+    endif
+
+    let l:options = map(copy(a:matches), 'v:val.word')
+
+    " Avoid defining the form twice, or SwapIt will ask for the option each
+    " time.
+    let l:swapLists = map(copy(g:swap_lists), 'v:val.options')
+    if index(l:swapLists, l:options) != -1
+	" The same set of options is already defined.
+	return
+    endif
+
+    " Add the new options directly to the variable, not through :SwapList; this
+    " way, multi-word swaps can be used, too.
+    let s:SwapItFormCnt += 1
+    call add(g:swap_lists, {'name': 'form' . s:SwapItFormCnt, 'options': l:options})
+endfunction
 
 let s:unescaped = '\%(\%(^\|[^\\]\)\%(\\\\\)*\\\)\@<!'
 function! s:Unescape( text )
@@ -37,6 +64,7 @@ function! TextFormComplete#TextFormComplete( findstart, base )
 	let l:formText = (a:base =~# '^\[.*]$' ? a:base[1:-2] : a:base)
 	let l:formItems = split(l:formText, s:unescaped.'|')
 	let l:matches = map(l:formItems, 's:FormItemToMatch(v:val)')
+	call s:AddToSwapIt(l:matches)
 	return l:matches
     endif
 endfunction
