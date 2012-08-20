@@ -58,6 +58,7 @@ To uninstall, use the |:RmVimball| command.
 DEPENDENCIES				       *TextFormComplete-dependencies*
 
 - Requires Vim 7.0 or higher.
+- SwapIt (vimscript #2294) plugin (optional)
 
 ==============================================================================
 CONFIGURATION				      *TextFormComplete-configuration*
@@ -66,6 +67,11 @@ For a permanent configuration, put the following commands into your |vimrc|:
 
 ==============================================================================
 INTEGRATION					*TextFormComplete-integration*
+
+When the SwapIt plugin is installed, the completed alternatives are defined as
+a |:SwapList|, so you can change your initial completed choice and move
+through all alternatives just by pressing CTRL-A / CTRL-X on them. (With a
+visual selection, this even works for alternatives containing whitespace!)
 
 ==============================================================================
 LIMITATIONS					*TextFormComplete-limitations*
