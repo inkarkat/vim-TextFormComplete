@@ -16,9 +16,14 @@ if exists('g:loaded_TextFormComplete') || (v:version < 700)
 endif
 let g:loaded_TextFormComplete = 1
 
-inoremap <script> <expr> <Plug>(TextFormComplete) TextFormComplete#Expr()
+inoremap <silent> <expr> <Plug>(TextFormComplete) TextFormComplete#Expr()
 if ! hasmapto('<Plug>(TextFormComplete)', 'i')
     imap <C-x><Bar> <Plug>(TextFormComplete)
+endif
+
+nnoremap <silent> <Plug>(TextFormComplete) :<C-u>call TextFormComplete#List(v:count)<CR>
+if ! hasmapto('<Plug>(TextFormComplete)', 'n')
+    nmap q<Bar> <Plug>(TextFormComplete)
 endif
 
 " vim: set ts=8 sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
