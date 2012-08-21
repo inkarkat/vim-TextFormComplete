@@ -132,7 +132,7 @@ function! s:GetChoice( matches )
 endfunction
 function! s:ReplaceWithMatch( startCol, endCol, match )
     let l:line = getline('.')
-    call setline('.', strpart(l:line, 0, a:startCol) . a:match.word . strpart(l:line, a:endCol + 1))
+    call setline('.', strpart(l:line, 0, a:startCol) . a:match.word . matchstr(l:line, '\%>'.(a:endCol + 1).'c.*$'))
 endfunction
 function! TextFormComplete#Choose( count )
     " Try before / at the cursor.
@@ -147,7 +147,7 @@ function! TextFormComplete#Choose( count )
     endif
 
     let l:endCol = s:Search('cen', l:type)[1]
-    let l:formText = strpart(getline('.'), l:startCol, l:endCol - l:startCol + 1)
+    let l:formText = matchstr(getline('.'), '\%'.(l:startCol + 1).'c.*\%'.(l:endCol + 1).'c.')
     let l:matches = s:Matches(l:formText)
     if empty(l:matches)
 	call s:ErrorMsg('No text form alternatives')
