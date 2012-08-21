@@ -10,6 +10,14 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"	004	22-Aug-2012	I18N: Allow for non-ASCII characters in the
+"				non-bracketed text form. Modify the s:chars
+"				regexps to include non-ASCII characters. Because
+"				we only have the endCol of the text form (and
+"				cannot easily match beyond that; the line may
+"				end there), we cannot simply use strpart(), but
+"				have to use matchstr() with /\%c/ to correctly
+"				deal with a final non-ASCII character.
 "	003	21-Aug-2012	ENH: Also offer normal-mode q| mapping that
 "				prints list or used supplied [count].
 "				FIX: With the use of the \%# addendum, the
@@ -72,9 +80,10 @@ function! s:FormItemToMatch( formItem )
     endif
     return l:match
 endfunction
-let s:chars = '[][()|\\0-9A-Za-z_+-]'
-let s:startChars = s:chars[0:1].s:chars[3:].s:chars.'*'
-let s:endChars = s:chars.'*'.s:chars[0].s:chars[2:]
+let s:chars = '\%([][()|\\0-9A-Za-z_+-]\|[^\x00-\x7F]\)'
+"              01234567
+let s:startChars = s:chars[0:4].s:chars[6:].s:chars.'*'
+let s:endChars = s:chars.'*'.s:chars[0:3].s:chars[5:]
 function! s:Search( flags, ... )
     let l:type = 0
 
@@ -91,7 +100,7 @@ function! s:Search( flags, ... )
     return [l:type, l:col - 1] " Return byte index, not column.
 endfunction
 function! s:Matches( formText )
-    let l:formText = (a:formText =~# '^\[.*]$' ? a:formText[1:-2] : a:formText)
+    let l:formText = (a:formText =~# '^\[.*]$' ? a:formText[1:-2] : a:formText) " Since [ and ] are in the ASCII range and always represented by a single byte, we can use simple array slicing to remove them.
     let l:formItems = split(l:formText, s:unescaped.'|')
     let l:matches = map(l:formItems, 's:FormItemToMatch(v:val)')
     call s:AddToSwapIt(l:matches)
@@ -132,7 +141,7 @@ function! s:GetChoice( matches )
 endfunction
 function! s:ReplaceWithMatch( startCol, endCol, match )
     let l:line = getline('.')
-    call setline('.', strpart(l:line, 0, a:startCol) . a:match.word . matchstr(l:line, '\%>'.(a:endCol + 1).'c.*$'))
+    call setline('.', strpart(l:line, 0, a:startCol) . a:match.word . matchstr(l:line, '\%>'.(a:endCol + 1).'c.*$'))    " Columns in /\%c/ are 1-based.
 endfunction
 function! TextFormComplete#Choose( count )
     " Try before / at the cursor.
@@ -147,7 +156,7 @@ function! TextFormComplete#Choose( count )
     endif
 
     let l:endCol = s:Search('cen', l:type)[1]
-    let l:formText = matchstr(getline('.'), '\%'.(l:startCol + 1).'c.*\%'.(l:endCol + 1).'c.')
+    let l:formText = matchstr(getline('.'), '\%'.(l:startCol + 1).'c.*\%'.(l:endCol + 1).'c.')  " Columns in /\%c/ are 1-based.
     let l:matches = s:Matches(l:formText)
     if empty(l:matches)
 	call s:ErrorMsg('No text form alternatives')
