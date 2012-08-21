@@ -18,6 +18,13 @@
 "				instead check for the end match at the cursor
 "				position first, then do the search for the
 "				beginning of the text form.
+"				FIX: Handle corner cases when there's only a [ /
+"				] at the beginning / end; this should then not
+"				be included in the first / last alternative.
+"				Have s:Search() return the text form type (0/1),
+"				and pass that in to the second search for the
+"				other side, to avoid matches with the other
+"				pattern.
 "	002	21-Aug-2012	ENH: Define completed alternatives in SwapIt, so
 "				that the choice made can be corrected via
 "				CTRL-A / CTRL-X.
@@ -66,14 +73,22 @@ function! s:FormItemToMatch( formItem )
     return l:match
 endfunction
 let s:chars = '[][()|\\0-9A-Za-z_+-]'
-function! s:Search( flags )
-    " Locate the start of a text form in the format "[foo bar|quux]".
-    let l:col = searchpos(s:unescaped.'\[.\{-}'.s:unescaped.']', a:flags, line('.'))[1]
-    if l:col == 0
-	" Locate the start of a text form in the format "foo|quux".
-	let l:col = searchpos('\%('.s:chars.'\+'.s:unescaped.'|\)\+'.s:chars.'\w\+', a:flags, line('.'))[1]
+let s:startChars = s:chars[0:1].s:chars[3:].s:chars.'*'
+let s:endChars = s:chars.'*'.s:chars[0].s:chars[2:]
+function! s:Search( flags, ... )
+    let l:type = 0
+
+    if ! a:0 || a:1 == 0
+	" Locate the start of a text form in the format "[foo bar|quux]".
+	let l:col = searchpos(s:unescaped.'\[.\{-}'.s:unescaped.']', a:flags, line('.'))[1]
     endif
-    return l:col - 1 " Return byte index, not column.
+    if a:0 && a:1 == 1 || ! a:0 && l:col == 0
+	let l:type = 1
+
+	" Locate the start of a text form in the format "foo|quux".
+	let l:col = searchpos(s:startChars.'\%('.s:unescaped.'|'.s:chars.'\+'.'\)*'.s:unescaped.'|'.s:endChars, a:flags, line('.'))[1]
+    endif
+    return [l:type, l:col - 1] " Return byte index, not column.
 endfunction
 function! s:Matches( formText )
     let l:formText = (a:formText =~# '^\[.*]$' ? a:formText[1:-2] : a:formText)
@@ -84,8 +99,9 @@ function! s:Matches( formText )
 endfunction
 function! TextFormComplete#TextFormComplete( findstart, base )
     if a:findstart
-	let l:isCursorAtEndOfFormText = (s:Search('ben') + 2 == col('.'))
-	return (l:isCursorAtEndOfFormText ? s:Search('bn') : -1)
+	let [l:type, l:col] = s:Search('ben')
+	let l:isCursorAtEndOfFormText = (l:col + 2 == col('.'))
+	return (l:isCursorAtEndOfFormText ? s:Search('bn', l:type)[1] : -1)
     else
 	return s:Matches(a:base)
     endif
@@ -120,17 +136,17 @@ function! s:ReplaceWithMatch( startCol, endCol, match )
 endfunction
 function! TextFormComplete#Choose( count )
     " Try before / at the cursor.
-    let l:startCol = s:Search('bc')
+    let [l:type, l:startCol] = s:Search('bc')
     if l:startCol == -1
 	" Try after the cursor.
-	let l:startCol = s:Search('')
+	let [l:type, l:startCol] = s:Search('')
     endif
     if l:startCol == -1
 	call s:ErrorMsg('No text form under cursor')
 	return
     endif
 
-    let l:endCol = s:Search('cen')
+    let l:endCol = s:Search('cen', l:type)[1]
     let l:formText = strpart(getline('.'), l:startCol, l:endCol - l:startCol + 1)
     let l:matches = s:Matches(l:formText)
     if empty(l:matches)
