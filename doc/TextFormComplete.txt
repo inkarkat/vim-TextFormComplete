@@ -16,12 +16,18 @@ history				|TextFormComplete-history|
 DESCRIPTION					*TextFormComplete-description*
 
 This plugin can transform textual options (in the form FOO|BAR, as they are
-often found in templates or snippets) into an insert-mode completion that
-offers all alternatives ("FOO" and "BAR" in this example), and allows to
-choose one and replace the full options block with it.
+often found in templates or snippets) into a printed list or insert-mode
+completion, which offer all alternatives ("FOO" and "BAR" in this example),
+and allow to choose one and replace the full options block with it.
 
 ==============================================================================
 USAGE						      *TextFormComplete-usage*
+								       *q_bar*
+q|			List all individual alternatives in the text form
+			close to the cursor and allow the user to choose one,
+			which then replaces the full options block.
+[count]q|		Replace the full options block with the [count]'th
+			alternative from it.
 								*i_CTRL-X_bar*
 CTRL-X |		Convert the text form before the cursor into the
 			individual alternatives and offer them for completion.
@@ -62,8 +68,6 @@ DEPENDENCIES				       *TextFormComplete-dependencies*
 
 ==============================================================================
 CONFIGURATION				      *TextFormComplete-configuration*
-
-For a permanent configuration, put the following commands into your |vimrc|:
 
 ==============================================================================
 INTEGRATION					*TextFormComplete-integration*
