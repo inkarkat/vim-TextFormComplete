@@ -17,7 +17,11 @@
 "				cannot easily match beyond that; the line may
 "				end there), we cannot simply use strpart(), but
 "				have to use matchstr() with /\%c/ to correctly
-"				deal with a final non-ASCII character.
+"				deal with a final non-ASCII character. Same for
+"				determining l:isCursorAtEndOfFormText; simply
+"				adding 1 to endCol won't do, use search()
+"				instead to verify that the cursor is directly
+"				after the form text.
 "	003	21-Aug-2012	ENH: Also offer normal-mode q| mapping that
 "				prints list or used supplied [count].
 "				FIX: With the use of the \%# addendum, the
@@ -109,7 +113,7 @@ endfunction
 function! TextFormComplete#TextFormComplete( findstart, base )
     if a:findstart
 	let [l:type, l:col] = s:Search('ben')
-	let l:isCursorAtEndOfFormText = (l:col + 2 == col('.'))
+	let l:isCursorAtEndOfFormText = search('\%'.(l:col + 1).'c.\%#', 'bn', line('.'))   " Columns in /\%c/ are 1-based.
 	return (l:isCursorAtEndOfFormText ? s:Search('bn', l:type)[1] : -1)
     else
 	return s:Matches(a:base)
