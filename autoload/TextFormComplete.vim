@@ -1,15 +1,17 @@
 " TextFormComplete.vim: Convert textual options into completion candidates.
 "
 " DEPENDENCIES:
-"   - ingouserquery.vim autoload script
+"   - ingo/query/get.vim autoload script
 "   - SwapIt.vim plugin (optional)
 "
-" Copyright: (C) 2012 Ingo Karkat
+" Copyright: (C) 2012-2013 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"	005	31-May-2013	Move ingouserquery#Get...() functions into
+"				ingo-library.
 "	004	22-Aug-2012	I18N: Allow for non-ASCII characters in the
 "				non-bracketed text form. Modify the s:chars
 "				regexps to include non-ASCII characters. Because
@@ -139,7 +141,7 @@ function! s:GetChoice( matches )
 	endif
     endfor
     echo 'Type number (<Enter> cancels): '
-    let l:choice = ingouserquery#GetNumber(len(a:matches))
+    let l:choice = ingo#query#get#Number(len(a:matches))
     redraw	" Somehow need this to avoid the hit-enter prompt.
     return l:choice
 endfunction
