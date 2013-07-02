@@ -1,13 +1,16 @@
 " TextFormComplete.vim: Convert textual options into completion candidates.
 "
 " DEPENDENCIES:
+"   - TextFormComplete.vim autoload script
+"   - ingo/err.vim autoload script
 "
-" Copyright: (C) 2012 Ingo Karkat
+" Copyright: (C) 2012-2013 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"	003	03-Jul-2013	Abort q| on error.
 "	002	21-Aug-2012	ENH: Add normal-mode q| mapping.
 "	001	20-Aug-2012	file creation
 
@@ -22,7 +25,7 @@ if ! hasmapto('<Plug>(TextFormComplete)', 'i')
     imap <C-x><Bar> <Plug>(TextFormComplete)
 endif
 
-nnoremap <silent> <Plug>(TextFormComplete) :<C-u>call setline('.', getline('.'))<Bar>call TextFormComplete#Choose(v:count)<CR>
+nnoremap <silent> <Plug>(TextFormComplete) :<C-u>call setline('.', getline('.'))<Bar>if ! TextFormComplete#Choose(v:count)<Bar>echoerr ingo#err#Get()<Bar>endif<CR>
 if ! hasmapto('<Plug>(TextFormComplete)', 'n')
     nmap q<Bar> <Plug>(TextFormComplete)
 endif
