@@ -6,6 +6,8 @@
 "   - ingo/escape.vim autoload script
 "   - ingo/query/get.vim autoload script
 "   - SwapIt.vim plugin (optional)
+"   - repeat.vim (vimscript #2136) autoload script (optional)
+"   - visualrepeat.vim (vimscript #3848) autoload script (optional)
 "
 " Copyright: (C) 2012-2013 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
@@ -24,6 +26,7 @@
 "				TextFormComplete#ChooseAround() (old) and
 "				TextFormComplete#ChooseVisual() (for the new
 "				visual mode mappings).
+"				ENH: Enable repeat of q|.
 "	006	15-Jun-2013	Implement s:Unescape() with generic
 "				ingo#escape#Unescape().
 "	005	31-May-2013	Move ingouserquery#Get...() functions into
@@ -201,6 +204,10 @@ function! TextFormComplete#Choose( count, startCol, endCol )
     endif
 
     call s:ReplaceWithMatch(a:startCol, a:endCol, l:matches[l:count - 1])
+
+    silent! call       repeat#set("\<Plug>(TextFormComplete)", l:count)
+    silent! call visualrepeat#set("\<Plug>(TextFormComplete)", l:count)
+
     return 1
 endfunction
 
