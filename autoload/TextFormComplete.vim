@@ -1,6 +1,7 @@
 " TextFormComplete.vim: Convert textual options into completion candidates.
 "
 " DEPENDENCIES:
+"   - ingo/err.vim autoload script
 "   - ingo/escape.vim autoload script
 "   - ingo/query/get.vim autoload script
 "   - SwapIt.vim plugin (optional)
@@ -11,6 +12,7 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"	007	03-Jul-2013	Abort q| on error.
 "	006	15-Jun-2013	Implement s:Unescape() with generic
 "				ingo#escape#Unescape().
 "	005	31-May-2013	Move ingouserquery#Get...() functions into
@@ -46,13 +48,6 @@
 "				that the choice made can be corrected via
 "				CTRL-A / CTRL-X.
 "	001	20-Aug-2012	file creation
-
-function! s:ErrorMsg( text )
-    let v:errmsg = a:text
-    echohl ErrorMsg
-    echomsg v:errmsg
-    echohl None
-endfunction
 
 let s:SwapItFormCnt = 0
 function! s:AddToSwapIt( matches )
@@ -160,28 +155,29 @@ function! TextFormComplete#Choose( count )
 	let [l:type, l:startCol] = s:Search('')
     endif
     if l:startCol == -1
-	call s:ErrorMsg('No text form under cursor')
-	return
+	call ingo#err#Set('No text form under cursor')
+	return 0
     endif
 
     let l:endCol = s:Search('cen', l:type)[1]
     let l:formText = matchstr(getline('.'), '\%'.(l:startCol + 1).'c.*\%'.(l:endCol + 1).'c.')  " Columns in /\%c/ are 1-based.
     let l:matches = s:Matches(l:formText)
     if empty(l:matches)
-	call s:ErrorMsg('No text form alternatives')
-	return
+	call ingo#err#Set('No text form alternatives')
+	return 0
     endif
 
     let l:count = (a:count ? a:count : s:GetChoice(l:matches))
 
     if l:count == -1
-	return
+	return 1
     elseif l:count > len(l:matches)
-	call s:ErrorMsg(printf('Only %d alternatives', len(l:matches)))
-	return
+	call ingo#err#Set(printf('Only %d alternatives', len(l:matches)))
+	return 0
     endif
 
     call s:ReplaceWithMatch(l:startCol, l:endCol, l:matches[l:count - 1])
+    return 1
 endfunction
 
 " vim: set ts=8 sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
