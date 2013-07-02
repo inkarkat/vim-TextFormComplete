@@ -1,6 +1,7 @@
 " TextFormComplete.vim: Convert textual options into completion candidates.
 "
 " DEPENDENCIES:
+"   - ingo/cursor/move.vim autoload script
 "   - ingo/err.vim autoload script
 "   - ingo/escape.vim autoload script
 "   - ingo/query/get.vim autoload script
@@ -13,6 +14,16 @@
 "
 " REVISION	DATE		REMARKS
 "	007	03-Jul-2013	Abort q| on error.
+"				Refactoring: Pass around 1-based column values
+"				instead of 0-based byte indices, this better
+"				fits the majority of consumers and variable
+"				naming.
+"				Split off start and end column determination
+"				from TextFormComplete#Choose() and use two
+"				strategies implemented in
+"				TextFormComplete#ChooseAround() (old) and
+"				TextFormComplete#ChooseVisual() (for the new
+"				visual mode mappings).
 "	006	15-Jun-2013	Implement s:Unescape() with generic
 "				ingo#escape#Unescape().
 "	005	31-May-2013	Move ingouserquery#Get...() functions into
@@ -101,7 +112,7 @@ function! s:Search( flags, ... )
 	" Locate the start of a text form in the format "foo|quux".
 	let l:col = searchpos(s:startChars.'\%('.s:unescaped.'|'.s:chars.'\+'.'\)*'.s:unescaped.'|'.s:endChars, a:flags, line('.'))[1]
     endif
-    return [l:type, l:col - 1] " Return byte index, not column.
+    return [l:type, l:col]
 endfunction
 function! s:Matches( formText )
     let l:formText = (a:formText =~# '^\[.*]$' ? a:formText[1:-2] : a:formText) " Since [ and ] are in the ASCII range and always represented by a single byte, we can use simple array slicing to remove them.
@@ -113,8 +124,8 @@ endfunction
 function! TextFormComplete#TextFormComplete( findstart, base )
     if a:findstart
 	let [l:type, l:col] = s:Search('ben')
-	let l:isCursorAtEndOfFormText = search('\%'.(l:col + 1).'c.\%#', 'bn', line('.'))   " Columns in /\%c/ are 1-based.
-	return (l:isCursorAtEndOfFormText ? s:Search('bn', l:type)[1] : -1)
+	let l:isCursorAtEndOfFormText = search('\%'.l:col.'c.\%#', 'bn', line('.'))
+	return (l:isCursorAtEndOfFormText ? s:Search('bn', l:type)[1] - 1 : -1) " Return byte index, not column.
     else
 	return s:Matches(a:base)
     endif
@@ -145,9 +156,9 @@ function! s:GetChoice( matches )
 endfunction
 function! s:ReplaceWithMatch( startCol, endCol, match )
     let l:line = getline('.')
-    call setline('.', strpart(l:line, 0, a:startCol) . a:match.word . matchstr(l:line, '\%>'.(a:endCol + 1).'c.*$'))    " Columns in /\%c/ are 1-based.
+    call setline('.', strpart(l:line, 0, a:startCol - 1) . a:match.word . matchstr(l:line, '\%>'.a:endCol.'c.*$'))    " Indices in strpart() are 0-based, columns in /\%c/ are 1-based.
 endfunction
-function! TextFormComplete#Choose( count )
+function! TextFormComplete#ChooseAround( count )
     " Try before / at the cursor.
     let [l:type, l:startCol] = s:Search('bc')
     if l:startCol == -1
@@ -160,7 +171,20 @@ function! TextFormComplete#Choose( count )
     endif
 
     let l:endCol = s:Search('cen', l:type)[1]
-    let l:formText = matchstr(getline('.'), '\%'.(l:startCol + 1).'c.*\%'.(l:endCol + 1).'c.')  " Columns in /\%c/ are 1-based.
+    return TextFormComplete#Choose(a:count, l:startCol, l:endCol)
+endfunction
+function! TextFormComplete#ChooseVisual( count )
+    let l:endPos = col("'>")
+    if &selection ==# 'exclusive'
+	normal! g`>
+	call ingo#cursor#move#Left()
+	let l:endPos = col('.')
+	normal! g`<
+    endif
+    return TextFormComplete#Choose(a:count, col("'<"), l:endPos)
+endfunction
+function! TextFormComplete#Choose( count, startCol, endCol )
+    let l:formText = matchstr(getline('.'), '\%'.a:startCol.'c.*\%'.a:endCol.'c.')
     let l:matches = s:Matches(l:formText)
     if empty(l:matches)
 	call ingo#err#Set('No text form alternatives')
@@ -176,7 +200,7 @@ function! TextFormComplete#Choose( count )
 	return 0
     endif
 
-    call s:ReplaceWithMatch(l:startCol, l:endCol, l:matches[l:count - 1])
+    call s:ReplaceWithMatch(a:startCol, a:endCol, l:matches[l:count - 1])
     return 1
 endfunction
 
