@@ -1,6 +1,7 @@
 " TextFormComplete.vim: Convert textual options into completion candidates.
 "
 " DEPENDENCIES:
+"   - ingo/escape.vim autoload script
 "   - ingo/query/get.vim autoload script
 "   - SwapIt.vim plugin (optional)
 "
@@ -10,6 +11,8 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"	006	15-Jun-2013	Implement s:Unescape() with generic
+"				ingo#escape#Unescape().
 "	005	31-May-2013	Move ingouserquery#Get...() functions into
 "				ingo-library.
 "	004	22-Aug-2012	I18N: Allow for non-ASCII characters in the
@@ -76,7 +79,7 @@ endfunction
 
 let s:unescaped = '\%(\%(^\|[^\\]\)\%(\\\\\)*\\\)\@<!'
 function! s:Unescape( text )
-    return substitute(a:text, s:unescaped.'\\\ze[][|(\\]', '', 'g')
+    return ingo#escape#Unescape(a:text, '][|(\')
 endfunction
 function! s:FormItemToMatch( formItem )
     let [l:item, l:explanation] = matchlist(a:formItem, '^\(.\{-}\)\%( '.s:unescaped.'(\([^)]*\))\)\?$')[1:2]
