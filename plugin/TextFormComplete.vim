@@ -8,6 +8,7 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"	002	21-Aug-2012	ENH: Add normal-mode q| mapping.
 "	001	20-Aug-2012	file creation
 
 " Avoid installing twice or when in unsupported Vim version.
@@ -21,7 +22,7 @@ if ! hasmapto('<Plug>(TextFormComplete)', 'i')
     imap <C-x><Bar> <Plug>(TextFormComplete)
 endif
 
-nnoremap <silent> <Plug>(TextFormComplete) :<C-u>call TextFormComplete#List(v:count)<CR>
+nnoremap <silent> <Plug>(TextFormComplete) :<C-u>call setline('.', getline('.'))<Bar>call TextFormComplete#Choose(v:count)<CR>
 if ! hasmapto('<Plug>(TextFormComplete)', 'n')
     nmap q<Bar> <Plug>(TextFormComplete)
 endif
