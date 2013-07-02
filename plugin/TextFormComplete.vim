@@ -27,7 +27,7 @@ if ! hasmapto('<Plug>(TextFormComplete)', 'i')
     imap <C-x><Bar> <Plug>(TextFormComplete)
 endif
 
-nnoremap <silent> <Plug>(TextFormComplete) :<C-u>call setline('.', getline('.'))<Bar>if ! TextFormComplete#ChooseAround(v:count)<Bar>echoerr ingo#err#Get()<Bar>endif<CR>
+nnoremap <silent> <Plug>(TextFormComplete)      :<C-u>call setline('.', getline('.'))<Bar>if ! TextFormComplete#ChooseAround(v:count)<Bar>echoerr ingo#err#Get()<Bar>endif<CR>
 if ! hasmapto('<Plug>(TextFormComplete)', 'n')
     nmap q<Bar> <Plug>(TextFormComplete)
 endif
