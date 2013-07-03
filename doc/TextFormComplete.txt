@@ -22,12 +22,15 @@ and allow to choose one and replace the full options block with it.
 
 ==============================================================================
 USAGE						      *TextFormComplete-usage*
-								       *q_bar*
+							     *q_bar* *v_q_bar*
 q|			List all individual alternatives in the text form
 			close to the cursor and allow the user to choose one,
 			which then replaces the full options block.
-[count]q|		Replace the full options block with the [count]'th
-			alternative from it.
+{Visual}q|		List all individual alternatives in the selected text
+{Select}CTRL-X |	form and allow the user to choose one, which then
+			replaces the selection.
+[count]q|		Replace the full options block / selection with the
+{Visual}[count]q|	[count]'th alternative from it.
 								*i_CTRL-X_bar*
 CTRL-X |		Convert the text form before the cursor into the
 			individual alternatives and offer them for completion.
@@ -54,19 +57,21 @@ EXAMPLE						    *TextFormComplete-example*
 INSTALLATION				       *TextFormComplete-installation*
 
 This script is packaged as a |vimball|. If you have the "gunzip" decompressor
-in your PATH, simply edit the *.vba.gz package in Vim; otherwise, decompress
+in your PATH, simply edit the *.vmb.gz package in Vim; otherwise, decompress
 the archive first, e.g. using WinZip. Inside Vim, install by sourcing the
 vimball or via the |:UseVimball| command. >
-    vim TextFormComplete.vba.gz
+    vim TextFormComplete*.vmb.gz
     :so %
 To uninstall, use the |:RmVimball| command.
 
 DEPENDENCIES				       *TextFormComplete-dependencies*
 
 - Requires Vim 7.0 or higher.
-- Requires the |ingo-library.vim| plugin (vimscript #4433), version 1.007 or
+- Requires the |ingo-library.vim| plugin (vimscript #4433), version 1.010 or
   higher.
 - SwapIt (vimscript #2294) plugin (optional)
+- repeat.vim (vimscript #2136) plugin (optional)
+- visualrepeat.vim (vimscript #3848) plugin (optional)
 
 ==============================================================================
 CONFIGURATION				      *TextFormComplete-configuration*
@@ -78,9 +83,10 @@ If you want to use different mappings, map your keys to the
 <Plug>(TextFormComplete) mapping targets _before_ sourcing the script (e.g.
 in your |vimrc|): >
     imap <C-x><Bar> <Plug>(TextFormComplete)
+    smap <C-x><Bar> <Plug>(TextFormComplete)
     nmap q<Bar> <Plug>(TextFormComplete)
+    xmap q<Bar> <Plug>(TextFormComplete)
 <
-
 ==============================================================================
 INTEGRATION					*TextFormComplete-integration*
 
