@@ -2,7 +2,7 @@
 "
 " DEPENDENCIES:
 "   - TextFormComplete.vim autoload script
-"   - ingo/cursor/move.vim autoload script
+"   - ingo/selection/position.vim autoload script
 "   - ingo/err.vim autoload script
 "   - ingo/query/get.vim autoload script
 "   - repeat.vim (vimscript #2136) autoload script (optional)
@@ -14,6 +14,8 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"	008	04-Jul-2013	Factor out handling of selection to
+"				ingo#selection#position#Get().
 "	007	03-Jul-2013	Abort q| on error.
 "				Refactoring: Pass around 1-based column values
 "				instead of 0-based byte indices, this better
@@ -102,14 +104,8 @@ function! TextFormComplete#Normal#ChooseAround( count )
     return TextFormComplete#Normal#Choose(a:count, l:startCol, l:endCol)
 endfunction
 function! TextFormComplete#Normal#ChooseVisual( count )
-    let l:endPos = col("'>")
-    if &selection ==# 'exclusive'
-	normal! g`>
-	call ingo#cursor#move#Left()
-	let l:endPos = col('.')
-	normal! g`<
-    endif
-    return TextFormComplete#Normal#Choose(a:count, col("'<"), l:endPos)
+    let [l:startPos, l:endPos] = ingo#selection#position#Get()
+    return TextFormComplete#Normal#Choose(a:count, l:startPos[1], l:endPos[1])
 endfunction
 function! TextFormComplete#Normal#Choose( count, startCol, endCol )
     let l:formText = matchstr(getline('.'), '\%'.a:startCol.'c.*\%'.a:endCol.'c.')
