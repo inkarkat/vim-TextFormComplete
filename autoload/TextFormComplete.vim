@@ -1,13 +1,8 @@
 " TextFormComplete.vim: Convert textual options into completion candidates.
 "
 " DEPENDENCIES:
-"   - ingo/cursor/move.vim autoload script
-"   - ingo/err.vim autoload script
 "   - ingo/escape.vim autoload script
-"   - ingo/query/get.vim autoload script
 "   - SwapIt.vim plugin (optional)
-"   - repeat.vim (vimscript #2136) autoload script (optional)
-"   - visualrepeat.vim (vimscript #3848) autoload script (optional)
 "
 " Copyright: (C) 2012-2013 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
@@ -27,6 +22,8 @@
 "				TextFormComplete#ChooseVisual() (for the new
 "				visual mode mappings).
 "				ENH: Enable repeat of q|.
+"				Separate insert and normal mode implementations
+"				from the generic stuff.
 "	006	15-Jun-2013	Implement s:Unescape() with generic
 "				ingo#escape#Unescape().
 "	005	31-May-2013	Move ingouserquery#Get...() functions into
@@ -102,7 +99,7 @@ let s:chars = '\%([][()|\\0-9A-Za-z_+-]\|[^\x00-\x7F]\)'
 "              01234567
 let s:startChars = s:chars[0:4].s:chars[6:].s:chars.'*'
 let s:endChars = s:chars.'*'.s:chars[0:3].s:chars[5:]
-function! s:Search( flags, ... )
+function! TextFormComplete#Search( flags, ... )
     let l:type = 0
 
     if ! a:0 || a:1 == 0
@@ -117,98 +114,12 @@ function! s:Search( flags, ... )
     endif
     return [l:type, l:col]
 endfunction
-function! s:Matches( formText )
+function! TextFormComplete#Matches( formText )
     let l:formText = (a:formText =~# '^\[.*]$' ? a:formText[1:-2] : a:formText) " Since [ and ] are in the ASCII range and always represented by a single byte, we can use simple array slicing to remove them.
     let l:formItems = split(l:formText, s:unescaped.'|')
     let l:matches = map(l:formItems, 's:FormItemToMatch(v:val)')
     call s:AddToSwapIt(l:matches)
     return l:matches
-endfunction
-function! TextFormComplete#TextFormComplete( findstart, base )
-    if a:findstart
-	let [l:type, l:col] = s:Search('ben')
-	let l:isCursorAtEndOfFormText = search('\%'.l:col.'c.\%#', 'bn', line('.'))
-	return (l:isCursorAtEndOfFormText ? s:Search('bn', l:type)[1] - 1 : -1) " Return byte index, not column.
-    else
-	return s:Matches(a:base)
-    endif
-endfunction
-
-function! TextFormComplete#Expr()
-    set completefunc=TextFormComplete#TextFormComplete
-    return "\<C-x>\<C-u>"
-endfunction
-
-function! s:GetChoice( matches )
-    echohl Title
-    echo ' # alternative'
-    echohl None
-    for i in range(1, len(a:matches))
-	let l:explanation = get(a:matches[i - 1], 'menu', '')
-	echo printf('%2d %s', i, a:matches[i - 1].word)
-	if ! empty(l:explanation)
-	    echohl Directory
-	    echon "\t" . l:explanation
-	    echohl None
-	endif
-    endfor
-    echo 'Type number (<Enter> cancels): '
-    let l:choice = ingo#query#get#Number(len(a:matches))
-    redraw	" Somehow need this to avoid the hit-enter prompt.
-    return l:choice
-endfunction
-function! s:ReplaceWithMatch( startCol, endCol, match )
-    let l:line = getline('.')
-    call setline('.', strpart(l:line, 0, a:startCol - 1) . a:match.word . matchstr(l:line, '\%>'.a:endCol.'c.*$'))    " Indices in strpart() are 0-based, columns in /\%c/ are 1-based.
-endfunction
-function! TextFormComplete#ChooseAround( count )
-    " Try before / at the cursor.
-    let [l:type, l:startCol] = s:Search('bc')
-    if l:startCol == -1
-	" Try after the cursor.
-	let [l:type, l:startCol] = s:Search('')
-    endif
-    if l:startCol == -1
-	call ingo#err#Set('No text form under cursor')
-	return 0
-    endif
-
-    let l:endCol = s:Search('cen', l:type)[1]
-    return TextFormComplete#Choose(a:count, l:startCol, l:endCol)
-endfunction
-function! TextFormComplete#ChooseVisual( count )
-    let l:endPos = col("'>")
-    if &selection ==# 'exclusive'
-	normal! g`>
-	call ingo#cursor#move#Left()
-	let l:endPos = col('.')
-	normal! g`<
-    endif
-    return TextFormComplete#Choose(a:count, col("'<"), l:endPos)
-endfunction
-function! TextFormComplete#Choose( count, startCol, endCol )
-    let l:formText = matchstr(getline('.'), '\%'.a:startCol.'c.*\%'.a:endCol.'c.')
-    let l:matches = s:Matches(l:formText)
-    if empty(l:matches)
-	call ingo#err#Set('No text form alternatives')
-	return 0
-    endif
-
-    let l:count = (a:count ? a:count : s:GetChoice(l:matches))
-
-    if l:count == -1
-	return 1
-    elseif l:count > len(l:matches)
-	call ingo#err#Set(printf('Only %d alternatives', len(l:matches)))
-	return 0
-    endif
-
-    call s:ReplaceWithMatch(a:startCol, a:endCol, l:matches[l:count - 1])
-
-    silent! call       repeat#set("\<Plug>(TextFormComplete)", l:count)
-    silent! call visualrepeat#set("\<Plug>(TextFormComplete)", l:count)
-
-    return 1
 endfunction
 
 " vim: set ts=8 sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
