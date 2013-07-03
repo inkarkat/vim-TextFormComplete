@@ -10,6 +10,7 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"	008	04-Jul-2013	Don't add a single option to SwapIt.
 "	007	03-Jul-2013	Abort q| on error.
 "				Refactoring: Pass around 1-based column values
 "				instead of 0-based byte indices, this better
@@ -118,7 +119,11 @@ function! TextFormComplete#Matches( formText )
     let l:formText = (a:formText =~# '^\[.*]$' ? a:formText[1:-2] : a:formText) " Since [ and ] are in the ASCII range and always represented by a single byte, we can use simple array slicing to remove them.
     let l:formItems = split(l:formText, s:unescaped.'|')
     let l:matches = map(l:formItems, 's:FormItemToMatch(v:val)')
-    call s:AddToSwapIt(l:matches)
+
+    if len(l:matches) > 1
+	call s:AddToSwapIt(l:matches)
+    endif
+
     return l:matches
 endfunction
 
