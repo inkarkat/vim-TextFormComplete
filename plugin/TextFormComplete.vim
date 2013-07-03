@@ -22,17 +22,17 @@ if exists('g:loaded_TextFormComplete') || (v:version < 700)
 endif
 let g:loaded_TextFormComplete = 1
 
-inoremap <silent> <expr> <Plug>(TextFormComplete) TextFormComplete#Expr()
+inoremap <silent> <expr> <Plug>(TextFormComplete) TextFormComplete#Insert#Expr()
 if ! hasmapto('<Plug>(TextFormComplete)', 'i')
     imap <C-x><Bar> <Plug>(TextFormComplete)
 endif
 
-nnoremap <silent> <Plug>(TextFormComplete)      :<C-u>call setline('.', getline('.'))<Bar>if ! TextFormComplete#ChooseAround(v:count)<Bar>echoerr ingo#err#Get()<Bar>endif<CR>
+nnoremap <silent> <Plug>(TextFormComplete)      :<C-u>call setline('.', getline('.'))<Bar>if ! TextFormComplete#Normal#ChooseAround(v:count)<Bar>echoerr ingo#err#Get()<Bar>endif<CR>
 if ! hasmapto('<Plug>(TextFormComplete)', 'n')
     nmap q<Bar> <Plug>(TextFormComplete)
 endif
-xnoremap <silent> <Plug>(TextFormComplete)      :<C-u>call setline('.', getline('.'))<Bar>if ! TextFormComplete#ChooseVisual(v:count)<Bar>echoerr ingo#err#Get()<Bar>endif<CR>
-snoremap <silent> <Plug>(TextFormComplete) <C-g>:<C-u>call setline('.', getline('.'))<Bar>if ! TextFormComplete#ChooseVisual(v:count)<Bar>echoerr ingo#err#Get()<Bar>endif<CR>
+xnoremap <silent> <Plug>(TextFormComplete)      :<C-u>call setline('.', getline('.'))<Bar>if ! TextFormComplete#Normal#ChooseVisual(v:count)<Bar>echoerr ingo#err#Get()<Bar>endif<CR>
+snoremap <silent> <Plug>(TextFormComplete) <C-g>:<C-u>call setline('.', getline('.'))<Bar>if ! TextFormComplete#Normal#ChooseVisual(v:count)<Bar>echoerr ingo#err#Get()<Bar>endif<CR>
 " Note: Need a separate select mode mapping because without it, the query won't
 " show.
 if ! hasmapto('<Plug>(TextFormComplete)', 'x')
