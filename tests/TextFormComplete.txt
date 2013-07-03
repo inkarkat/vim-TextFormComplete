@@ -1,0 +1,13 @@
+    FOO|BAZ|QUUX ~
+    [FOO+BAR|My BAZ|The QUUX!] ~
+    [FOO (default)|BAZ (softer)|QUUX (the special choice)] ~
+
+laksjf [foo bar|bar\[t\]y|baz]
+laksjf [foo bar (the default)|bar\[t\]y (a special one)|baz (alternative)]
+laksjf my "foo|bar|baz"
+laksjf my foo\|hi|b\\a\r|baz
+
+als [foo:the default|bar:a special one|baz:alternative]
+als [foo \(default)|foo (the default)|bar (a special one with \[\])|baz (alternative)]
+[HA|HI|HO] is my [LA|LI|LU]
+corner cases: [] or [|||]
