@@ -16,6 +16,9 @@
 " REVISION	DATE		REMARKS
 "	008	04-Jul-2013	Factor out handling of selection to
 "				ingo#selection#position#Get().
+"				Handle linewise selected text forms.
+"				Deal with multiple selected lines by showing
+"				error.
 "	007	03-Jul-2013	Abort q| on error.
 "				Refactoring: Pass around 1-based column values
 "				instead of 0-based byte indices, this better
@@ -105,7 +108,14 @@ function! TextFormComplete#Normal#ChooseAround( count )
 endfunction
 function! TextFormComplete#Normal#ChooseVisual( count )
     let [l:startPos, l:endPos] = ingo#selection#position#Get()
-    return TextFormComplete#Normal#Choose(a:count, l:startPos[1], l:endPos[1])
+    if l:startPos[0] != l:endPos[0]
+	call ingo#err#Set('Select a single line text form')
+	return 0
+    endif
+
+    " Must convert the 0x7FFFFFFF value from a linewise visual selection to the
+    " actual length; TextFormComplete#Normal#Choose() can only deal with that.
+    return TextFormComplete#Normal#Choose(a:count, l:startPos[1], min([l:endPos[1], len(getline("'<"))]))
 endfunction
 function! TextFormComplete#Normal#Choose( count, startCol, endCol )
     let l:formText = matchstr(getline('.'), '\%'.a:startCol.'c.*\%'.a:endCol.'c.')
