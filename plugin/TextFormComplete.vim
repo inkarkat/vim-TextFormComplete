@@ -10,6 +10,8 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"	004	04-Jul-2013	Make the deselection value of a single [option]
+"				configurable.
 "	003	03-Jul-2013	Abort q| on error.
 "				ENH: Add visual q| and select mode <C-x>|
 "				mappings.
@@ -21,6 +23,15 @@ if exists('g:loaded_TextFormComplete') || (v:version < 700)
     finish
 endif
 let g:loaded_TextFormComplete = 1
+
+"- configuration ---------------------------------------------------------------
+
+if ! exists('g:TextFormComplete_DeselectionExpr')
+    let g:TextFormComplete_DeselectionExpr = 'substitute(v:val, ".", "-", "g")'
+endif
+
+
+"- mappings --------------------------------------------------------------------
 
 inoremap <silent> <expr> <Plug>(TextFormComplete) TextFormComplete#Insert#Expr()
 if ! hasmapto('<Plug>(TextFormComplete)', 'i')
