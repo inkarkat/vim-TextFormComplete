@@ -11,6 +11,8 @@
 "
 " REVISION	DATE		REMARKS
 "	008	04-Jul-2013	Don't add a single option to SwapIt.
+"				Allow to deselect a single [option] instead of
+"				just stupidly offering no choice.
 "	007	03-Jul-2013	Abort q| on error.
 "				Refactoring: Pass around 1-based column values
 "				instead of 0-based byte indices, this better
@@ -120,7 +122,11 @@ function! TextFormComplete#Matches( formText )
     let l:formItems = split(l:formText, s:unescaped.'|')
     let l:matches = map(l:formItems, 's:FormItemToMatch(v:val)')
 
-    if len(l:matches) > 1
+    if len(l:matches) == 1
+	" Allow to deselect a single [option] instead of just stupidly offering
+	" no choice.
+	call add(l:matches, {'word': ingo#actions#EvaluateWithVal(g:TextFormComplete_DeselectionExpr, l:matches[0].word), 'menu': printf('deselect "%s"', l:matches[0].word) })
+    elseif len(l:matches) > 1
 	call s:AddToSwapIt(l:matches)
     endif
 
