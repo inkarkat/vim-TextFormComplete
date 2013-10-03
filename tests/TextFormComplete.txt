@@ -1,6 +1,10 @@
     FOO|BAZ|QUUX ~
     [FOO+BAR|My BAZ|The QUUX!] ~
     [FOO (default)|BAZ (softer)|QUUX (the special choice)] ~
+    [none]
+[one|two|three]
+one|two|three
+[a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z]
 
 laksjf [foo bar|bar\[t\]y|baz]
 laksjf [foo bar (the default)|bar\[t\]y (a special one)|baz (alternative)]
@@ -11,3 +15,9 @@ als [foo:the default|bar:a special one|baz:alternative]
 als [foo \(default)|foo (the default)|bar (a special one with \[\])|baz (alternative)]
 [HA|HI|HO] is my [LA|LI|LU]
 corner cases: [] or [|||]
+
+[X] Great
+[ ] Good
+[ ] Mediocre
+[ ] Bad
+[ ] Oh my gosh!
