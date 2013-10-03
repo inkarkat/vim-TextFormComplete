@@ -31,7 +31,7 @@ q|			List all individual alternatives in the text form
 			replaces the selection.
 [count]q|		Replace the full options block / selection with the
 {Visual}[count]q|	[count]'th alternative from it.
-								*i_CTRL-X_bar*
+								*i_CTRL-X_Bar*
 CTRL-X |		Convert the text form before the cursor into the
 			individual alternatives and offer them for completion.
 
@@ -78,6 +78,14 @@ CONFIGURATION				      *TextFormComplete-configuration*
 
 For a permanent configuration, put the following commands into your |vimrc|:
 
+					  *g:TextFormComplete_DeselectionExpr*
+When there's only a single option, the plugin allows to deselect that value.
+This expression configures what the deselected value is (in |i_CTRL-X_Bar|,
+this must not be empty to be included in the completion list). By default, a
+string of "---" with the same length as the sole option is offered. You can
+change this to e.g. a single dash via: >
+    let g:TextFormComplete_DeselectionExpr = '"-"'
+<
 						      *TextFormComplete-remap*
 If you want to use different mappings, map your keys to the
 <Plug>(TextFormComplete) mapping targets _before_ sourcing the script (e.g.
