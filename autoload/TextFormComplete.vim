@@ -10,7 +10,7 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
-"	008	04-Jul-2013	Don't add a single option to SwapIt.
+"   1.00.008	04-Jul-2013	Don't add a single option to SwapIt.
 "				Allow to deselect a single [option] instead of
 "				just stupidly offering no choice.
 "	007	03-Jul-2013	Abort q| on error.
