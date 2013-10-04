@@ -1,0 +1,11 @@
+Sliders:
+[---#---]
+[#---------]
+
+Radio buttons:
+
+[X] Great
+[ ] Good
+[ ] Mediocre
+[ ] Bad
+[ ] Oh my gosh!
