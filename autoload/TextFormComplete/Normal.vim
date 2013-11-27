@@ -14,7 +14,7 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
-"	008	04-Jul-2013	Factor out handling of selection to
+"   1.00.008	04-Jul-2013	Factor out handling of selection to
 "				ingo#selection#position#Get().
 "				Handle linewise selected text forms.
 "				Deal with multiple selected lines by showing
