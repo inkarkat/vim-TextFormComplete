@@ -14,6 +14,9 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   1.10.009	28-Nov-2013	Cosmetics: Add one more padding between the
+"				number and the alternative in the query; looks
+"				better this way.
 "   1.00.008	04-Jul-2013	Factor out handling of selection to
 "				ingo#selection#position#Get().
 "				Handle linewise selected text forms.
@@ -71,11 +74,11 @@
 
 function! s:GetChoice( matches )
     echohl Title
-    echo ' # alternative'
+    echo ' #  alternative'
     echohl None
     for i in range(1, len(a:matches))
 	let l:explanation = get(a:matches[i - 1], 'menu', '')
-	echo printf('%2d %s', i, a:matches[i - 1].word)
+	echo printf('%2d  %s', i, a:matches[i - 1].word)
 	if ! empty(l:explanation)
 	    echohl Directory
 	    echon "\t" . l:explanation
