@@ -123,6 +123,7 @@ HISTORY						    *TextFormComplete-history*
 
 1.10	RELEASEME
 - ENH: Add support for sliders [---#-----].
+- Set change marks when replacing the text form with a match from normal mode.
 
 1.00	04-Oct-2013
 First published version.
@@ -131,7 +132,7 @@ First published version.
 Started development.
 
 ==============================================================================
-Copyright: (C) 2012-2013 Ingo Karkat
+Copyright: (C) 2012-2014 Ingo Karkat
 The VIM LICENSE applies to this plugin; see |copyright|.
 
 Maintainer:	Ingo Karkat <ingo@karkat.de>
