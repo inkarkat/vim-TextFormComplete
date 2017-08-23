@@ -121,7 +121,7 @@ IDEAS						      *TextFormComplete-ideas*
 ==============================================================================
 HISTORY						    *TextFormComplete-history*
 
-1.10	RELEASEME
+1.10	15-Jan-2014
 - ENH: Add support for sliders [---#-----].
 - Set change marks when replacing the text form with a match from normal mode.
 
