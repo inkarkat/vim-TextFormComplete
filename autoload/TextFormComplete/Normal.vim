@@ -2,18 +2,21 @@
 "
 " DEPENDENCIES:
 "   - TextFormComplete.vim autoload script
-"   - ingo/selection/position.vim autoload script
+"   - ingo/selection/area.vim autoload script
 "   - ingo/err.vim autoload script
 "   - ingo/query/get.vim autoload script
 "   - repeat.vim (vimscript #2136) autoload script (optional)
 "   - visualrepeat.vim (vimscript #3848) autoload script (optional)
 "
-" Copyright: (C) 2012-2014 Ingo Karkat
+" Copyright: (C) 2012-2017 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   1.11.011	24-Aug-2017	CHG: Rename ingo#selection#position#Get() to
+"				ingo#selection#area#Get().
+"				Minor: Also handle no selection made yet at all.
 "   1.10.010	09-Jan-2014	Set change marks when replacing the text form
 "				with a match.
 "   1.10.009	28-Nov-2013	Cosmetics: Add one more padding between the
@@ -117,8 +120,8 @@ function! TextFormComplete#Normal#ChooseAround( count )
     return TextFormComplete#Normal#Choose(a:count, l:startCol, l:endCol)
 endfunction
 function! TextFormComplete#Normal#ChooseVisual( count )
-    let [l:startPos, l:endPos] = ingo#selection#position#Get()
-    if l:startPos[0] != l:endPos[0]
+    let [l:startPos, l:endPos] = ingo#selection#area#Get()
+    if l:startPos[0] == 0 || l:startPos[0] != l:endPos[0]
 	call ingo#err#Set('Select a single line text form')
 	return 0
     endif
