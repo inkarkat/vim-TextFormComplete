@@ -1,0 +1,5 @@
+autoload/TextFormComplete.vim
+autoload/TextFormComplete/Insert.vim
+autoload/TextFormComplete/Normal.vim
+plugin/TextFormComplete.vim
+doc/TextFormComplete.txt
