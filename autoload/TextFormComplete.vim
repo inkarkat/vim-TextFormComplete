@@ -4,7 +4,7 @@
 "   - ingo/escape.vim autoload script
 "   - SwapIt.vim plugin (optional)
 "
-" Copyright: (C) 2012-2013 Ingo Karkat
+" Copyright: (C) 2012-2014 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
@@ -132,7 +132,7 @@ function! s:MatchesForSlider( formText )
     return map(range(l:formWidth), 's:SliderStepMatch(l:formWidth, v:val)')
 endfunction
 function! TextFormComplete#Matches( formText )
-    if a:formText =~# '^\[.*]$'
+    if a:formText =~# '^\[.*\]$'
 	let l:isEnclosed = 1
 	let l:formText = a:formText[1:-2]   " Since [ and ] are in the ASCII range and always represented by a single byte, we can use simple array slicing to remove them.
     else
