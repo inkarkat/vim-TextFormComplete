@@ -3,9 +3,20 @@ Sliders:
 [#---------]
 
 Radio buttons:
+(O) Great       ( ) Good        ( ) Mediocre    ( ) Bad         ( ) Oh my gosh!
 
-[X] Great
-[ ] Good
-[ ] Mediocre
-[ ] Bad
-[ ] Oh my gosh!
+(O) Great
+( ) Good
+( ) Mediocre
+( ) Bad
+( ) Oh my gosh!
+
+
+Checkboxes:
+[X] Salami       [X] Mushrooms    [ ] Tuna         [ ] Onions       [ ] Extra cheese
+
+[X] Salami
+[X] Mushrooms
+[ ] Tuna
+[ ] Onions
+[ ] Extra cheese
