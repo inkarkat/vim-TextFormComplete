@@ -10,7 +10,7 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
-"	004	04-Jul-2013	Make the deselection value of a single [option]
+"   1.00.004	04-Jul-2013	Make the deselection value of a single [option]
 "				configurable.
 "	003	03-Jul-2013	Abort q| on error.
 "				ENH: Add visual q| and select mode <C-x>|
