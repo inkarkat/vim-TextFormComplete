@@ -9,7 +9,7 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
-"	007	03-Jul-2013	Abort q| on error.
+"   1.00.007	03-Jul-2013	Abort q| on error.
 "				Refactoring: Pass around 1-based column values
 "				instead of 0-based byte indices, this better
 "				fits the majority of consumers and variable
