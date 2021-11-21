@@ -15,9 +15,3 @@ als [foo:the default|bar:a special one|baz:alternative]
 als [foo \(default)|foo (the default)|bar (a special one with \[\])|baz (alternative)]
 [HA|HI|HO] is my [LA|LI|LU]
 corner cases: [] or [|||]
-
-[X] Great
-[ ] Good
-[ ] Mediocre
-[ ] Bad
-[ ] Oh my gosh!
