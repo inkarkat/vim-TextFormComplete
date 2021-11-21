@@ -8,12 +8,13 @@
 "   - repeat.vim (vimscript #2136) autoload script (optional)
 "   - visualrepeat.vim (vimscript #3848) autoload script (optional)
 "
-" Copyright: (C) 2012-2017 Ingo Karkat
+" Copyright: (C) 2012-2019 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   1.11.012	01-Apr-2019	Refactoring: Use ingo#change#Set().
 "   1.11.011	24-Aug-2017	CHG: Rename ingo#selection#position#Get() to
 "				ingo#selection#area#Get().
 "				Minor: Also handle no selection made yet at all.
@@ -101,8 +102,7 @@ function! s:ReplaceWithMatch( startCol, endCol, match )
 
     " Set the change marks to the first and last character of the replaced
     " match, like e.g. the "p" command.
-    call setpos("'[", [0, line('.'), a:startCol, 0])
-    call setpos("']", [0, line('.'), a:startCol + len(a:match.word) - 1, 0])
+    call ingo#change#Set([line('.'), a:startCol], [line('.'), a:startCol + len(a:match.word) - 1])
 endfunction
 function! TextFormComplete#Normal#ChooseAround( count )
     " Try before / at the cursor.
