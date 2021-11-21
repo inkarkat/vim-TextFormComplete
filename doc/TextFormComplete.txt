@@ -73,7 +73,7 @@ To uninstall, use the |:RmVimball| command.
 DEPENDENCIES				       *TextFormComplete-dependencies*
 
 - Requires Vim 7.0 or higher.
-- Requires the |ingo-library.vim| plugin (vimscript #4433), version 1.032 or
+- Requires the |ingo-library.vim| plugin (vimscript #4433), version 1.037 or
   higher.
 - SwapIt (vimscript #2294) plugin (optional)
 - repeat.vim (vimscript #2136) plugin (optional)
@@ -122,7 +122,7 @@ IDEAS						      *TextFormComplete-ideas*
 HISTORY						    *TextFormComplete-history*
 
 1.11	RELEASEME
-*** You need to update to ingo-library (vimscript #4433) version 1.032! ***
+*** You need to update to ingo-library (vimscript #4433) version 1.037! ***
 
 1.10	15-Jan-2014
 - ENH: Add support for sliders [---#-----].
@@ -135,7 +135,7 @@ First published version.
 Started development.
 
 ==============================================================================
-Copyright: (C) 2012-2017 Ingo Karkat
+Copyright: (C) 2012-2019 Ingo Karkat
 The VIM LICENSE applies to this plugin; see |copyright|.
 
 Maintainer:	Ingo Karkat <ingo@karkat.de>
